@@ -1,16 +1,17 @@
+
 import string
-print('------------------------------------------------------------------------------------')
+print('-----------------------------------------------------------------------------------------------------')
 print('Selamat datang, silahkan lakukan chek validasi kata dengan menginputkan kata yang ada dalam daftar')
 print('Berikut adalah daftar kata yang bisa dichek pada lexical analyzer ini: ')
 print('ich, du, kleider, physik, saft, mais, studie, trinke, ernte, koche, nahen, tragen')
-print('------------------------------------------------------------------------------------')
+print('-----------------------------------------------------------------------------------------------------')
 x = input()
 x = str(x)
 sentence = x
 input_string = sentence.lower()+'#'
 
 alphabet_list = list(string.ascii_lowercase)
-state_list = ['q1','q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8', 'q9', 'q10', 'q11', 'q12', 'q13', 'q14'
+state_list = ['q0','q1','q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8', 'q9', 'q10', 'q11', 'q12', 'q13', 'q14'
 , 'q15', 'q16','q17', 'q18', 'q19', 'q20', 'q21', 'q22', 'q23', 'q24', 'q25', 'q26', 'q27', 'q28', 'q29'
 , 'q30', 'q31', 'q32', 'q33', 'q34', 'q35', 'q36', 'q37', 'q38', 'q40', 'q41']
 
@@ -128,10 +129,152 @@ while state!='accept':
     print('current token: ', current_token, ', valid')
     current_token =' '
   if state == 'error':
-    print('error')
+    print('current token: ', current_token, ', error')
+    print('Maaf, kata yang anda masukan tidak valid')
+    print('Silahkan periksa kembali kata yang anda masukan')
     break;
   idx_char = idx_char + 1
 
 #conclusion
 if state == 'accept':
   print('semua token di input: ', sentence, ', valid')
+
+#PARSER GRAMMAR CHEKER
+#input example
+#x = input()
+#x = str(x)
+#sentence = x
+print()
+print('-----------------------------------------------------------------------------------------------------')
+print('Chek validasi kata dengan analyzer lexical telah selesai')
+print('Selanjutnya akan dichek aturan grammarnya')
+print('-----------------------------------------------------------------------------------------------------')
+tokens = sentence.lower().split()
+tokens.append('EOS')
+
+#symbols definition
+non_terminals = ['S', 'SB', 'VB', 'OB']
+terminals = ['ich', 'du', 'kleider', 'physik', 'saft', 'mais', 'studie', 'trinke', 'ernte', 'koche', 'nahen', 'tragen']
+
+#parse table definition
+parse_table = {}
+
+parse_table[('S', 'ich')] = ['SB', 'VB', 'OB']
+parse_table[('S', 'du')] = ['SB', 'VB', 'OB']
+parse_table[('S', 'kleider')] = ['error']
+parse_table[('S', 'physik')] = ['error']
+parse_table[('S', 'saft')] = ['error']
+parse_table[('S', 'mais')] = ['error']
+parse_table[('S', 'studie')] = ['error']
+parse_table[('S', 'trinke')] = ['error']
+parse_table[('S', 'ernte')] = ['error']
+parse_table[('S', 'koche')] = ['error']
+parse_table[('S', 'nahen')] = ['error']
+parse_table[('S', 'tragen')] = ['error']
+parse_table[('S', 'EOS')] = ['error']
+
+parse_table[('SB', 'ich')] = ['ich']
+parse_table[('SB', 'du')] = ['du']
+parse_table[('SB', 'kleider')] = ['error']
+parse_table[('SB', 'physik')] = ['error']
+parse_table[('SB', 'saft')] = ['error']
+parse_table[('SB', 'mais')] = ['error']
+parse_table[('SB', 'studie')] = ['error']
+parse_table[('SB', 'trinke')] = ['error']
+parse_table[('SB', 'ernte')] = ['error']
+parse_table[('SB', 'koche')] = ['error']
+parse_table[('SB', 'nahen')] = ['error']
+parse_table[('SB', 'tragen')] = ['error']
+parse_table[('SB', 'EOS')] = ['error']
+
+parse_table[('VB', 'ich')] = ['error']
+parse_table[('VB', 'du')] = ['error']
+parse_table[('VB', 'kleider')] = ['error']
+parse_table[('VB', 'physik')] = ['error']
+parse_table[('VB', 'saft')] = ['error']
+parse_table[('VB', 'mais')] = ['error']
+parse_table[('VB', 'studie')] = ['studie']
+parse_table[('VB', 'trinke')] = ['trinke']
+parse_table[('VB', 'ernte')] = ['ernte']
+parse_table[('VB', 'koche')] = ['koche']
+parse_table[('VB', 'nahen')] = ['nahen']
+parse_table[('VB', 'tragen')] = ['tragen']
+parse_table[('VB', 'EOS')] = ['error']
+
+parse_table[('OB', 'ich')] = ['error']
+parse_table[('OB', 'du')] = ['error']
+parse_table[('OB', 'kleider')] = ['kleider']
+parse_table[('OB', 'physik')] = ['physik']
+parse_table[('OB', 'saft')] = ['saft']
+parse_table[('OB', 'mais')] = ['mais']
+parse_table[('OB', 'studie')] = ['error']
+parse_table[('OB', 'trinke')] = ['error']
+parse_table[('OB', 'ernte')] = ['error']
+parse_table[('OB', 'koche')] = ['error']
+parse_table[('OB', 'nahen')] = ['error']
+parse_table[('OB', 'tragen')] = ['error']
+parse_table[('OB', 'EOS')] = ['error']
+
+#stack initialization
+stack = []
+stack.append('#')
+stack.append('S')
+
+#input reading initialization
+idx_token = 0
+symbol = tokens[idx_token]
+
+#parsing process
+try :
+  while (len(stack) > 0):
+    top = stack[len(stack)-1]
+    print('top = ', top)
+    print('symbol = ', symbol)
+    if top in terminals:
+      print('top adalah simbol terminal')
+      if top==symbol:
+        stack.pop()
+        idx_token = idx_token + 1
+        symbol = tokens[idx_token]
+        if symbol == 'EOS':
+          print('isi stack: ', stack)
+          stack.pop()
+      else:
+        print('error')
+        break;
+    elif top in non_terminals:
+      print('top adalah simbol non-terminal')
+      if parse_table[(top, symbol)][0] != 'error':
+        stack.pop()
+        symbols_to_be_pushed = parse_table[(top, symbol)]
+        for i in range(len(symbols_to_be_pushed)-1,-1,-1):
+          stack.append(symbols_to_be_pushed[i])
+      else:
+        print('error')
+        break;
+    else:
+      print('error')
+      break;
+    print('isi stack: ', stack)
+    print()
+except KeyError :
+    print('Kata tidak ditemukan dalam sistem')
+
+#conclusion
+print()
+if symbol == 'EOS' and len(stack) == 0:
+  print('-----------------------------------------------------------------------------------------------------')
+  print('Input string: ', sentence)
+  print('Selamat!!!')
+  print('Kalimat yang anda masukan diterima, karna sesuai Grammar')
+  print('Terimakasih')
+  print('-----------------------------------------------------------------------------------------------------')
+else :
+  print('-----------------------------------------------------------------------------------------------------')
+  print('Error, input string: ', sentence)
+  print('Mohon Maaf')
+  print('Kalimat yang anda masukan tidak diterima, karna tidak sesuai Grammar')
+  print('atau terdapat kata yang tidak valid')
+  print('Silahkan chek kembali kalimat yang anda masukan')
+  print('Terimakasih')
+  print('-----------------------------------------------------------------------------------------------------')
